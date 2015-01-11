@@ -4,22 +4,26 @@ function Card (suit, number) {
 }
 
 Card.prototype.htmlTag = function () {
-  var $div = $('<div>'),
-      suit = this.suit, num = this.number, cons = this.constructor,
-      suitSyms = cons.SUIT_SYMBOLS, numSyms = cons.NUMBER_SYMBOLS;
+  var $div = $('<div>'), $span = $('<span>'),
+      suit = this.suit, num = this.number, klass = this.constructor,
+      suitSyms = klass.SUIT_SYMBOLS, numSyms = klass.NUMBER_SYMBOLS;
 
-  $div.addClass('card');
+  $span.append(suitSyms[suit])
+    .append(' ')
+    .append(numSyms[num]);
+
+  $div.append($span);
+  $div.addClass(klass.htmlClass)
+      .addClass('hidden');
 
   if (suit == "hearts" || suit == "diamonds") {
     $div.addClass('red');
   }
 
-  $div.append(suitSyms[suit])
-      .append(' ')
-      .append(numSyms[num]);
-
   return $div[0];
 };
+
+Card.htmlClass = 'card';
 
 Card.SUIT_SYMBOLS = {
   clubs:    "&clubs;",
