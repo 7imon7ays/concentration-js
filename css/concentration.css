@@ -1,6 +1,14 @@
 .content {
   margin: 0 auto;
-  width: 860px;
-  border: 2px solid black;
+  width: 90vw;
+}
+
+.card {
+  border: 1px solid #666;
+  float: left;
+  font-size: 20px;
+  width: 3.8em;
+  height: 5em;
+  text-align: center;
 }
 
