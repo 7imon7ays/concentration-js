@@ -2,7 +2,7 @@ function Board($el) {
   this.render = function (content) {
     $el.html(content);
   };
-  this.deck = new Deck();
+  this.deck = new Deck().shuffle();
 }
 
 Board.prototype.buildCardTags = function () {
