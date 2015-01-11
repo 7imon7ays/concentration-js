@@ -1,7 +1,7 @@
 function Concentration () {
  this.$content = $('.content');
  this.board = new Board(this.$content);
- this.inspector = new Inspector(this.$content);
+ this.inspector = new Inspector(this.board);
 }
 
 Concentration.prototype.start = function () {

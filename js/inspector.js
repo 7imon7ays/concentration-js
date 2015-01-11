@@ -1,12 +1,11 @@
-function Inspector ($boardEl) {
-  this.$boardEl = $boardEl;
+function Inspector (board) {
+  this.board = board;
   this.flipCardsOnClick();
 }
 
 Inspector.prototype.flipCardsOnClick = function () {
-  var flippedCards = this.flippedCards;
-  this.$boardEl.on('click', function (event) {
-    var $card = $(event.target);
+  this.board.on('click', function (evnt) {
+    var $card = $(evnt.target);
     $card.removeClass('hidden');
   });
 };
