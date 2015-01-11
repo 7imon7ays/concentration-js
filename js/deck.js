@@ -4,17 +4,15 @@ function Deck () {
 }
 
 Deck.prototype.loadCards = function () {
-  var suitStrings = this.constructor.SUIT_STRINGS,
-      numStrings = this.constructor.NUMBER_STRINGS,
-      cards = this.cards;
+  var cards = this.cards;
 
-  suitStrings.forEach(function (suit) {
-    numStrings.forEach(function (number) {
+  for (var suit in Card.SUIT_SYMBOLS) {
+    for (var number in Card.NUMBER_SYMBOLS) {
       var thisCard = new Card(suit, number);
 
       cards.push(thisCard);
-    });
-  });
+    }
+  }
 };
 
 Deck.prototype.shuffle = function () {
@@ -38,27 +36,4 @@ Deck.prototype.shuffle = function () {
 
   return this;
 };
-
-Deck.SUIT_STRINGS = [
-  'clubs',
-  'diamonds',
-  'hearts',
-  'spades'
-];
-
-Deck.NUMBER_STRINGS = [
-  'two',
-  'three',
-  'four',
-  'five',
-  'six',
-  'seven',
-  'eight',
-  'nine',
-  'ten',
-  'jack',
-  'queen',
-  'king',
-  'ace'
-];
 
