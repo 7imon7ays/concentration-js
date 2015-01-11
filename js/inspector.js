@@ -1,12 +1,29 @@
 function Inspector (board) {
   this.board = board;
-  this.flipCardsOnClick();
+  this.flippedCards = [];
 }
 
-Inspector.prototype.flipCardsOnClick = function () {
+Inspector.prototype.flipOrHideCardsOnClick = function () {
   this.board.on('click', function (evnt) {
     var $card = $(evnt.target);
-    $card.removeClass('hidden');
-  });
+
+    if (this.flippedCards.length > 1) {
+      this.hideCards();
+    } else {
+      this.inspect($card);
+    }
+
+  }.bind(this));
+};
+
+Inspector.prototype.inspect = function ($card) {
+  this.flippedCards.push($card);
+  $card.removeClass('hidden');
+};
+
+Inspector.prototype.hideCards = function () {
+  while ($card = this.flippedCards.pop()) {
+    $card.addClass('hidden');
+  }
 };
 

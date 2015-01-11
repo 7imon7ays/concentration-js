@@ -6,7 +6,7 @@ function Concentration () {
 
 Concentration.prototype.start = function () {
   this.board.layCards();
-  this.inspector.flipCardsOnClick();
+  this.inspector.flipOrHideCardsOnClick();
 };
 
 new Concentration().start();
