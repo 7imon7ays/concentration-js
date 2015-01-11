@@ -7,17 +7,7 @@ function Board($el) {
 
 Board.prototype.buildCardTags = function () {
   return this.deck.cards.map(function (c) {
-    var $div = $('<div>'), suit = c.suit, num = c.number;
-
-    $div.addClass('card');
-
-    if (suit == "&hearts;" || suit == "&diams;") {
-      $div.addClass('red');
-    }
-
-    $div.append(suit)
-        .append(num);
-    return $div[0];
+    return c.htmlTag();
   });
 };
 
