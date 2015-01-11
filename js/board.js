@@ -19,7 +19,21 @@ Board.prototype.layCards = function () {
   this.render(cardTags);
 };
 
+Board.prototype.show = function (cardTag) {
+  cardTag.removeClass('hidden');
+};
+
+Board.prototype.hide = function (cardTag) {
+  cardTag.addClass('hidden');
+};
+
 Board.prototype.on = function (evnt, callback) {
   this.$el.on(evnt, callback);
+};
+
+Board.prototype.remove = function (cardTags) {
+  cardTags.forEach(function (cardTag) {
+    cardTag.addClass('removed');
+  });
 };
 

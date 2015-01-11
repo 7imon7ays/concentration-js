@@ -30,17 +30,17 @@ Inspector.prototype.compareCards = function () {
 };
 
 Inspector.prototype.inspect = function ($card) {
-  $card.removeClass('hidden');
+  this.board.show($card);
   this.flippedCards.push($card);
 };
 
 Inspector.prototype.removePair = function () {
-  console.log('Matched cards');
+  this.board.remove(this.flippedCards);
 };
 
 Inspector.prototype.hideCards = function () {
   while ($card = this.flippedCards.pop()) {
-    $card.addClass('hidden');
+    this.board.hide($card);
   }
 };
 

@@ -37,6 +37,9 @@ Card.SUIT_SYMBOLS = {
 Card.NUMBER_SYMBOLS = {
   two:   "2",
   three: "3",
+};
+
+/*
   four:  "4",
   five:  "5",
   six:   "6",
@@ -48,5 +51,4 @@ Card.NUMBER_SYMBOLS = {
   queen: "Q",
   king : "K",
   ace  : "A"
-};
-
+  */
