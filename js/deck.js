@@ -10,9 +10,10 @@ Deck.prototype.loadCards = function () {
   for (var suit in suitStrings) {
     for (var number in numStrings) {
       var this_suit = suitStrings[suit],
-          this_number = numStrings[number];
+          this_number = numStrings[number],
+          this_card = new Card(this_suit, this_number);
 
-      this.cards.push([this_suit, this_number]);
+      this.cards.push(this_card);
     }
   }
 };

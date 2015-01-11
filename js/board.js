@@ -7,7 +7,7 @@ function Board($el) {
 
 Board.prototype.buildCardTags = function () {
   return this.deck.cards.map(function (c) {
-    var $div = $('<div>'), suit = c[0], num = c[1];
+    var $div = $('<div>'), suit = c.suit, num = c.number;
 
     $div.addClass('card');
 
