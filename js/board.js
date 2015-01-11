@@ -17,7 +17,3 @@ Board.prototype.layCards = function () {
   this.render(cardTags);
 };
 
-var board = new Board($('.content'));
-
-board.layCards();
-
