@@ -20,6 +20,8 @@ Card.prototype.htmlTag = function () {
     $div.addClass('red');
   }
 
+  $div.data('number', num);
+
   return $div[0];
 };
 
