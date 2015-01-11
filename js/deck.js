@@ -5,17 +5,16 @@ function Deck () {
 
 Deck.prototype.loadCards = function () {
   var suitStrings = this.constructor.SUIT_STRINGS,
-      numStrings = this.constructor.NUMBER_STRINGS;
+      numStrings = this.constructor.NUMBER_STRINGS,
+      cards = this.cards;
 
-  for (var suit in suitStrings) {
-    for (var number in numStrings) {
-      var this_suit = suitStrings[suit],
-          this_number = numStrings[number],
-          this_card = new Card(this_suit, this_number);
+  suitStrings.forEach(function (suit) {
+    numStrings.forEach(function (number) {
+      var thisCard = new Card(suit, number);
 
-      this.cards.push(this_card);
-    }
-  }
+      cards.push(thisCard);
+    });
+  });
 };
 
 Deck.prototype.shuffle = function () {
@@ -40,26 +39,26 @@ Deck.prototype.shuffle = function () {
   return this;
 };
 
-Deck.SUIT_STRINGS = {
-  clubs:    "&clubs;",
-  diamonds: "&diams;",
-  hearts:   "&hearts;",
-  spades:   "&spades;"
-};
+Deck.SUIT_STRINGS = [
+  'clubs',
+  'diamonds',
+  'hearts',
+  'spades'
+];
 
-Deck.NUMBER_STRINGS = {
-  two:   "2",
-  three: "3",
-  four:  "4",
-  five:  "5",
-  six:   "6",
-  seven: "7",
-  eight: "8",
-  nine:  "9",
-  ten:   "10",
-  jack:  "J",
-  queen: "Q",
-  king : "K",
-  ace  : "A"
-};
+Deck.NUMBER_STRINGS = [
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'ten',
+  'jack',
+  'queen',
+  'king',
+  'ace'
+];
 
