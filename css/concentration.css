@@ -39,6 +39,10 @@
   visibility: hidden;
 }
 
+.card.removed {
+  background-color: rgb(199, 198, 198);
+}
+
 .card.removed > span {
   visibility: hidden;
 }
