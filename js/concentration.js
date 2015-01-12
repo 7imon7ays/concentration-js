@@ -3,12 +3,12 @@ function Concentration () {
       graveyard = new Graveyard($graveyardEl);
   this.$boardEl = $('.board');
   this.board = new Board(this.$boardEl, graveyard);
-  this.inspector = new Inspector(this.board);
+  this.player = new Player(this.board);
 }
 
 Concentration.prototype.start = function () {
   this.board.layCards();
-  this.inspector.flipOrHideCardsOnClick();
+  this.player.listenForInput();
 };
 
 new Concentration().start();
