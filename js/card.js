@@ -3,29 +3,43 @@ function Card (suit, number) {
   this.number = number;
 }
 
-Card.prototype.htmlTag = function () {
-  var $div = $('<div>'), $span = $('<span>'),
-      suit = this.suit, num = this.number, klass = this.constructor,
-      suitSyms = klass.SUIT_SYMBOLS, numSyms = klass.NUMBER_SYMBOLS;
+Card.prototype.spanTag = function () {
+  return $('<span>').append(this.suitSyms(this.suit))
+                    .append(this.numSyms(this.number));
+};
 
-  $span.append(suitSyms[suit])
-    .append(' ')
-    .append(numSyms[num]);
-
-  $div.append($span);
-  $div.addClass(klass.htmlClass)
+Card.prototype.divTag = function () {
+  var $div = $('<div>');
+  $div.addClass(this.constructor.htmlClass)
       .addClass('hidden');
 
-  if (suit == "hearts" || suit == "diamonds") {
+  if (this.suit == "hearts" || this.suit == "diamonds") {
     $div.addClass('red');
   }
 
-  $div.data('number', num);
+  $div.data('number', this.number);
 
-  return $div[0];
+  return $div;
+};
+
+Card.prototype.htmlTag = function () {
+  var spanTag = this.spanTag(),
+      divTag = this.divTag();
+
+  divTag.append(spanTag);
+
+  return divTag[0];
 };
 
 Card.htmlClass = 'card';
+
+Card.prototype.suitSyms = function (suit) {
+  return this.constructor.SUIT_SYMBOLS[suit];
+};
+
+Card.prototype.numSyms = function (num) {
+  return this.constructor.NUMBER_SYMBOLS[num];
+};
 
 Card.SUIT_SYMBOLS = {
   clubs:    "&clubs;",
