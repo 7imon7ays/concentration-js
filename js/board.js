@@ -1,5 +1,6 @@
-function Board($el) {
+function Board($el, graveyard) {
   this.$el = $el;
+  this.graveyard = graveyard;
   this.deck = new Deck().shuffle();
 }
 
@@ -32,6 +33,7 @@ Board.prototype.on = function (evnt, callback) {
 };
 
 Board.prototype.remove = function (cardTags) {
+  this.graveyard.add(cardTags);
   cardTags.forEach(function (cardTag) {
     cardTag.addClass('removed');
   });

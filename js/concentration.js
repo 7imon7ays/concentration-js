@@ -1,7 +1,9 @@
 function Concentration () {
- this.$content = $('.content');
- this.board = new Board(this.$content);
- this.inspector = new Inspector(this.board);
+  var $graveyardEl = $('.graveyard'),
+      graveyard = new Graveyard($graveyardEl);
+  this.$boardEl = $('.board');
+  this.board = new Board(this.$boardEl, graveyard);
+  this.inspector = new Inspector(this.board);
 }
 
 Concentration.prototype.start = function () {
