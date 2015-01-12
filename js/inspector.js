@@ -24,6 +24,7 @@ Inspector.prototype.compareCards = function () {
 
   if (cardsHaveSameNumber) {
     this.removePair();
+    this.flippedCards.length = 0;
   } else {
     this.hideCards();
   }
