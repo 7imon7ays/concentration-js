@@ -1,3 +1,7 @@
+body {
+  background-color: green;
+}
+
 .content {
   margin: 0 auto;
   width: 90vw;
@@ -17,6 +21,7 @@
   width: 3.8em;
   height: 5em;
   position: relative;
+  background: white;
 }
 
 .card.hidden {
