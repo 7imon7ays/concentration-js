@@ -87,5 +87,7 @@ Concentration.prototype.notice = function (msg) {
   console.log(msg);
 };
 
-new Concentration().start();
+$(function () {
+  new Concentration().start();
+});
 
