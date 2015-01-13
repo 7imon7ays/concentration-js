@@ -1,14 +1,14 @@
-function Player (board) {
+function Player (id, board) {
+  this.id = id;
   this.board = board;
-  this.inspector = new Inspector(board);
 }
 
 Player.prototype.takeTurn = function () {
   var turnTaken = Q.defer();
 
   this.getInput()
-  .then(function () {
-    turnTaken.resolve();
+  .then(function ($card) {
+    turnTaken.resolve($card);
   });
 
   return turnTaken.promise;
@@ -19,21 +19,12 @@ Player.prototype.getInput = function () {
   this.board.on('click', function (evnt) {
     var $card = $(evnt.target);
 
-    if (this.inspector.isShowingMax()) {
-      this.inspector.compareCards();
-      this.board.off('click');
-      clicked.resolve();
-    } else {
-      if (!$card.hasClass('card')) return;
-      this.pick($card);
-    }
+    if (!$card.hasClass('card')) return;
+
+    this.board.off('click');
+    clicked.resolve($card);
   }.bind(this));
 
   return clicked.promise;
-};
-
-Player.prototype.pick = function ($card) {
-  if (!$card.hasClass('hidden')) return;
-  this.inspector.inspect($card);
 };
 
