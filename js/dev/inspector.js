@@ -3,7 +3,7 @@ function Inspector (board) {
   this.flippedCards = [];
 }
 
-Inspector.prototype.handleChoice = function ($card) {
+Inspector.prototype.evaluateChoice = function ($card) {
   var outcome = "continue";
 
   this.flippedCards.push($card);
@@ -20,7 +20,7 @@ Inspector.prototype.compareCards = function () {
     // Flush out flipped cards by setting length to 0
     return "match";
   } else {
-    return "fail";
+    return "miss";
   }
 
   // Reduce cards to 'false' unless they all have the same number

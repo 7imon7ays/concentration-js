@@ -138,61 +138,62 @@ Concentration.prototype.play = function () {
   _invite(this.player1);
 
   function _invite(currentPlayer) {
-    console.log('Waiting on: Player', currentPlayer.id);
+    game.notice('Waiting on: Player ' + currentPlayer.id);
     if (game.endCondition()) return gameOver.resolve();
 
     game.turn(currentPlayer)
     .then(function (nextPlayer) {
       _invite(nextPlayer);
     })
-    .fail(function (error) {
-      game.notice(error);
-    });
+    .fail(function (err) { throw err; });
   }
 
   return gameOver.promise;
 };
 
 Concentration.prototype.turn = function (player) {
-  var game = this, madeMove = Q.defer(),
-      currentPlayer = (player == this.player1 ? this.player1 : this.player2),
-      nextPlayer = (player == this.player1 ? this.player2 : this.player1);
+  var madeMove = Q.defer();
 
-  currentPlayer.takeTurn()
-  .then(function ($chosenCard) {
-    var turnOutcome = game.inspector.handleChoice($chosenCard);
-
-    switch(turnOutcome) {
-      case "continue":
-        // Player keeps going if the max number of cards
-        // hasn't been flipped
-        madeMove.resolve(currentPlayer);
-        break;
-      case "match":
-        currentPlayer.confirmNextTurn()
-        .then(function () {
-          game.inspector.removeMatches();
-          madeMove.resolve(currentPlayer);
-        })
-        .fail(function (err) { console.log(err); });
-        break;
-      case "fail":
-        currentPlayer.confirmNextTurn()
-        .then(function () {
-          game.inspector.hideCards();
-          madeMove.resolve(nextPlayer);
-        })
-        .fail(function (err) { console.log(err); });
-        break;
-      default:
-        throw new Error("Unknown choice outcome");
-    }
-  })
-  .fail(function (error) {
-    game.notice(error);
-  });
+  player.takeTurn()
+  .then(function ($card) {
+    this.handleChoice(player, $card, madeMove);
+  }.bind(this))
+  .fail(function (err) { throw err; });
 
   return madeMove.promise;
+};
+
+Concentration.prototype.handleChoice = function (player, $chosenCard, completedPromise) {
+  var currentPlayer = (player == this.player1 ? this.player1 : this.player2),
+      nextPlayer = (player == this.player1 ? this.player2 : this.player1);
+
+  var turnOutcome = this.inspector.evaluateChoice($chosenCard);
+
+  switch(turnOutcome) {
+    case "continue":
+      // Player keeps going if the max number of cards
+      // hasn't been flipped
+      completedPromise.resolve(currentPlayer);
+      break;
+    case "match":
+      currentPlayer.confirmNextTurn()
+      .then(function () {
+        this.inspector.removeMatches();
+        completedPromise.resolve(currentPlayer);
+      }.bind(this))
+      .fail(function (err) { throw err; });
+      break;
+    case "miss":
+      currentPlayer.confirmNextTurn()
+      .then(function () {
+        this.inspector.hideCards();
+        completedPromise.resolve(nextPlayer);
+      }.bind(this))
+      .fail(function (err) { throw err; });
+      break;
+    default:
+      throw new Error("Unknown choice outcome");
+  }
 };
 
 Concentration.prototype.endCondition = function () {
@@ -272,7 +273,7 @@ function Inspector (board) {
   this.flippedCards = [];
 }
 
-Inspector.prototype.handleChoice = function ($card) {
+Inspector.prototype.evaluateChoice = function ($card) {
   var outcome = "continue";
 
   this.flippedCards.push($card);
@@ -289,7 +290,7 @@ Inspector.prototype.compareCards = function () {
     // Flush out flipped cards by setting length to 0
     return "match";
   } else {
-    return "fail";
+    return "miss";
   }
 
   // Reduce cards to 'false' unless they all have the same number
