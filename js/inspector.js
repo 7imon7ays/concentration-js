@@ -4,19 +4,24 @@ function Inspector (board) {
 }
 
 Inspector.prototype.compareCards = function () {
-  // Reduce cards to 'false' unless they all have the same number
-  var cardsHaveSameNumber = !!this.flippedCards.reduce(function (prevCard, card) {
-    if (prevCard.data('number') == card.data('number')) return card;
-    return false;
-  });
-
-  if (cardsHaveSameNumber) {
+  if (_cardsHaveSameNumber(this.flippedCards)) {
     this.removePair();
     // Flush out flipped cards by setting length to 0
     this.flippedCards.length = 0;
   }
 
   this.hideCards();
+
+  // Reduce cards to 'false' unless they all have the same number
+  function _cardsHaveSameNumber (cards) {
+    return !!cards.reduce(function (prevCard, card) {
+      if (prevCard.data && prevCard.data('number') == card.data('number')) {
+        return card;
+      }
+
+      return false;
+    });
+  }
 };
 
 Inspector.prototype.inspect = function ($card) {
