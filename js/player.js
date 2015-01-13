@@ -19,11 +19,24 @@ Player.prototype.getInput = function () {
   this.board.on('click', function (evnt) {
     var $card = $(evnt.target);
 
-    if (!$card.hasClass('card')) return;
+    // Ignore click if player didn't click a card
+    // Or clicked a revealed card
+    if (!$card.hasClass('card') || !$card.hasClass('hidden')) return;
 
     this.board.off('click');
     clicked.resolve($card);
   }.bind(this));
+
+  return clicked.promise;
+};
+
+Player.prototype.confirmNextTurn = function () {
+  var $window = $(window), clicked = Q.defer();
+
+  $window.on('click', function () {
+    clicked.resolve();
+    $window.off('click');
+  });
 
   return clicked.promise;
 };

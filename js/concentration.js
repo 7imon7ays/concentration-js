@@ -37,20 +37,45 @@ Concentration.prototype.play = function () {
 };
 
 Concentration.prototype.turn = function (player) {
-  var currentPlayer = (player == this.player1 ? this.player1 : this.player2),
-      nextPlayer = (player == this.player1 ? this.player2 : this.player1),
-      turnCompleted = Q.defer();
+  var game = this, madeMove = Q.defer(),
+      currentPlayer = (player == this.player1 ? this.player1 : this.player2),
+      nextPlayer = (player == this.player1 ? this.player2 : this.player1);
 
   currentPlayer.takeTurn()
-  .then(function ($card) {
-    var turnOutcome = this.inspector.handle($card);
-    turnCompleted.resolve( turnOutcome == "fail" ? nextPlayer : currentPlayer );
-  }.bind(this))
-  .fail(function (error) {
-    this.notice(error);
-  }.bind(this));
+  .then(function ($chosenCard) {
+    var turnOutcome = game.inspector.handleChoice($chosenCard);
 
-  return turnCompleted.promise;
+    switch(turnOutcome) {
+      case "continue":
+        // Player keeps going if the max number of cards
+        // hasn't been flipped
+        madeMove.resolve(currentPlayer);
+        break;
+      case "match":
+        currentPlayer.confirmNextTurn()
+        .then(function () {
+          game.inspector.removeMatches();
+          madeMove.resolve(currentPlayer);
+        })
+        .fail(function (err) { console.log(err); });
+        break;
+      case "fail":
+        currentPlayer.confirmNextTurn()
+        .then(function () {
+          game.inspector.hideCards();
+          madeMove.resolve(nextPlayer);
+        })
+        .fail(function (err) { console.log(err); });
+        break;
+      default:
+        throw new Error("Unknown choice outcome");
+    }
+  })
+  .fail(function (error) {
+    game.notice(error);
+  });
+
+  return madeMove.promise;
 };
 
 Concentration.prototype.endCondition = function () {
