@@ -3,6 +3,10 @@ function Player (board) {
   this.inspector = new Inspector(board);
 }
 
+Player.prototype.takeTurn = function () {
+  this.listenForInput();
+};
+
 Player.prototype.pick = function ($card) {
   if (!$card.hasClass('hidden')) return;
   this.inspector.inspect($card);

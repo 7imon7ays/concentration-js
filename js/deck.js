@@ -15,6 +15,10 @@ Deck.prototype.loadCards = function () {
   }
 };
 
+Deck.prototype.count = function () {
+  return this.cards.length;
+};
+
 Deck.prototype.shuffle = function () {
  /*
   * As seen on stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array

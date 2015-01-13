@@ -2,6 +2,7 @@ function Board($el, graveyard) {
   this.$el = $el;
   this.graveyard = graveyard;
   this.deck = new Deck().shuffle();
+  this.numCards = this.deck.count();
 }
 
 Board.prototype.render = function (content) {
@@ -32,8 +33,13 @@ Board.prototype.on = function (evnt, callback) {
   this.$el.on(evnt, callback);
 };
 
+Board.prototype.off = function (evnt) {
+  this.$el.off(evnt);
+};
+
 Board.prototype.remove = function (cardTags) {
   this.graveyard.add(cardTags);
+  this.numCards -= cardTags.length;
   cardTags.forEach(function (cardTag) {
     cardTag.addClass('removed');
   });
