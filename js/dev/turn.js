@@ -21,7 +21,7 @@ Turn.prototype.handleChoice = function (player, $chosenCard) {
     case "match":
       currentPlayer.confirmNextTurn()
       .then(function () {
-        this.inspector.removeMatches();
+        this.inspector.removeMatches(currentPlayer);
         choiceHandled.resolve(currentPlayer);
       }.bind(this))
       .fail(function (err) { throw err; });

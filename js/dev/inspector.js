@@ -43,8 +43,8 @@ Inspector.prototype.isShowingMax = function () {
   return this.flippedCards.length >= this.constructor.MAX_MATCHES;
 };
 
-Inspector.prototype.removeMatches = function () {
-  this.board.remove(this.flippedCards);
+Inspector.prototype.removeMatches = function (player) {
+  this.board.remove(this.flippedCards, player);
   this.flush();
 };
 

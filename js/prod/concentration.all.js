@@ -1,6 +1,7 @@
-function Board($el, graveyard) {
+function Board($el, graveyard1, graveyard2) {
   this.$el = $el;
-  this.graveyard = graveyard;
+  this.graveyard1 = graveyard1;
+  this.graveyard2 = graveyard2;
   this.deck = new Deck().shuffle();
   this.numCards = this.deck.count();
 }
@@ -37,11 +38,13 @@ Board.prototype.off = function (evnt) {
   this.$el.off(evnt);
 };
 
-Board.prototype.remove = function (cardTags) {
-  this.graveyard.add(cardTags);
-  this.numCards -= cardTags.length;
-  cardTags.forEach(function (cardTag) {
-    cardTag.addClass('removed');
+Board.prototype.remove = function ($cards, player) {
+  var graveyard = (player.id == 1 ? this.graveyard1 : this.graveyard2);
+
+  graveyard.add($cards);
+  this.numCards -= $cards.length;
+  $cards.forEach(function ($cardTags) {
+    $cardTags.addClass('removed');
   });
 };
 
@@ -163,10 +166,12 @@ function Concentration () {
 
 Concentration.prototype.initBoard = function () {
   var $boardEl = $('.board'),
-      $graveyardEl = $('.graveyard'),
-      graveyard = new Graveyard($graveyardEl);
+      $graveyard1El = $('.graveyard#one'),
+      $graveyard2El = $('.graveyard#two'),
+      graveyard1 = new Graveyard($graveyard1El);
+      graveyard2 = new Graveyard($graveyard2El);
 
-  this.board = new Board($boardEl, graveyard);
+  this.board = new Board($boardEl, graveyard1, graveyard2);
   this.board.layCards();
 };
 
@@ -175,6 +180,7 @@ Concentration.prototype.initPlayers = function () {
 
   this.player1 = new HumanPlayer(1, this.board);
   this.player2 = new ComputerPlayer($cards, 2, this.board);
+  //this.player2 = new HumanPlayer(2, this.board);
 };
 
 Concentration.prototype.play = function () {
@@ -201,7 +207,7 @@ Concentration.prototype.play = function () {
 Concentration.prototype.defer_to = function (player) {
   var turnTaken = Q.defer(), game = this;
 
-  p1 = player.takeTurn()
+  player.takeTurn()
   .then(function ($card) {
     return game.turn.handleChoice(player, $card);
   })
@@ -362,8 +368,8 @@ Inspector.prototype.isShowingMax = function () {
   return this.flippedCards.length >= this.constructor.MAX_MATCHES;
 };
 
-Inspector.prototype.removeMatches = function () {
-  this.board.remove(this.flippedCards);
+Inspector.prototype.removeMatches = function (player) {
+  this.board.remove(this.flippedCards, player);
   this.flush();
 };
 
@@ -385,6 +391,18 @@ Inspector.MAX_MATCHES = 2;
 $(function () {
   new Concentration().play();
 });
+
+function find(num) {
+  var $cards = $('.card'), matches = [], i;
+
+  for (i = 0; i < $cards.length; i++) {
+    if ($($cards[i]).data('number') == num) {
+      matches.push($cards[i]);
+    }
+  }
+
+  return matches;
+}
 
 
 // Superclass of ComputerPlayer and HumanPlayer
@@ -432,7 +450,7 @@ Turn.prototype.handleChoice = function (player, $chosenCard) {
     case "match":
       currentPlayer.confirmNextTurn()
       .then(function () {
-        this.inspector.removeMatches();
+        this.inspector.removeMatches(currentPlayer);
         choiceHandled.resolve(currentPlayer);
       }.bind(this))
       .fail(function (err) { throw err; });
