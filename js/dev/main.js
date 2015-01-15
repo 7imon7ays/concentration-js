@@ -1,0 +1,4 @@
+$(function () {
+  new Concentration().play();
+});
+

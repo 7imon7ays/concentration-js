@@ -2,11 +2,11 @@ function Concentration () {
   this.board = null;
   this.initBoard();
 
-  this.inspector = new Inspector(this.board);
-
   this.player1 = null;
   this.player2 = null;
   this.initPlayers();
+
+  this.turn = new Turn(this.board, this.player1, this.player2);
 }
 
 Concentration.prototype.initBoard = function () {
@@ -26,68 +26,39 @@ Concentration.prototype.initPlayers = function () {
 };
 
 Concentration.prototype.play = function () {
-  var game = this;
-  var gameOver = Q.defer();
+  var game = this,
+      gameOver = Q.defer();
 
-  _invite(this.player1);
+  _prompt(this.player1);
 
-  function _invite(currentPlayer) {
+  return gameOver.promise;
+
+  function _prompt(currentPlayer) {
     game.notice('Waiting on: Player ' + currentPlayer.id);
+
     if (game.endCondition()) return gameOver.resolve();
 
-    game.turn(currentPlayer)
-    .then(function (nextPlayer) {
-      _invite(nextPlayer);
+    game.defer_to(currentPlayer)
+    .then(function (nextOrSamePlayer) {
+      _prompt(nextOrSamePlayer);
     })
     .fail(function (err) { throw err; });
   }
-
-  return gameOver.promise;
 };
 
-Concentration.prototype.turn = function (player) {
-  var madeMove = Q.defer();
+Concentration.prototype.defer_to = function (player) {
+  var turnTaken = Q.defer(), game = this;
 
-  player.takeTurn()
+  p1 = player.takeTurn()
   .then(function ($card) {
-    this.handleChoice(player, $card, madeMove);
-  }.bind(this))
+    return game.turn.handleChoice(player, $card);
+  })
+  .then(function (nextOrSamePlayer) {
+    turnTaken.resolve(nextOrSamePlayer);
+  })
   .fail(function (err) { throw err; });
 
-  return madeMove.promise;
-};
-
-Concentration.prototype.handleChoice = function (player, $chosenCard, completedPromise) {
-  var currentPlayer = (player == this.player1 ? this.player1 : this.player2),
-      nextPlayer = (player == this.player1 ? this.player2 : this.player1);
-
-  var turnOutcome = this.inspector.evaluateChoice($chosenCard);
-
-  switch(turnOutcome) {
-    case "continue":
-      // Player keeps going if the max number of cards
-      // hasn't been flipped
-      completedPromise.resolve(currentPlayer);
-      break;
-    case "match":
-      currentPlayer.confirmNextTurn()
-      .then(function () {
-        this.inspector.removeMatches();
-        completedPromise.resolve(currentPlayer);
-      }.bind(this))
-      .fail(function (err) { throw err; });
-      break;
-    case "miss":
-      currentPlayer.confirmNextTurn()
-      .then(function () {
-        this.inspector.hideCards();
-        completedPromise.resolve(nextPlayer);
-      }.bind(this))
-      .fail(function (err) { throw err; });
-      break;
-    default:
-      throw new Error("Unknown choice outcome");
-  }
+  return turnTaken.promise;
 };
 
 Concentration.prototype.endCondition = function () {
@@ -98,8 +69,4 @@ Concentration.prototype.endCondition = function () {
 Concentration.prototype.notice = function (msg) {
   console.log(msg);
 };
-
-$(function () {
-  new Concentration().play();
-});
 
