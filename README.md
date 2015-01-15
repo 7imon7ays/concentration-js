@@ -49,5 +49,4 @@ be callback hell.
 Concentration.js uses [Q][q]'s promises to keep the code sane. For example check out the [turn loop][turn loop].
 
 [q]: https://github.com/kriskowal/q
-[turn loop]: js/dev/concentration.js
-
+[turn loop]: /dev/concentration.js#L32
