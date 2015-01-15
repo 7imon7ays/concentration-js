@@ -68,7 +68,7 @@ Concentration.prototype.defer_to = function (player) {
   .then(function (nextOrSamePlayer) {
     var numCards = game.board.numCards;
 
-    game.hud.render(numCards);
+    game.hud.render(numCards, nextOrSamePlayer);
     turnTaken.resolve(nextOrSamePlayer);
   })
   .fail(function (err) { throw err; });

@@ -221,7 +221,7 @@ Concentration.prototype.defer_to = function (player) {
   .then(function (nextOrSamePlayer) {
     var numCards = game.board.numCards;
 
-    game.hud.render(numCards);
+    game.hud.render(numCards, nextOrSamePlayer);
     turnTaken.resolve(nextOrSamePlayer);
   })
   .fail(function (err) { throw err; });
@@ -303,10 +303,15 @@ function Hud ($el, player1, player2) {
   this.player2 = player2;
 }
 
-Hud.prototype.render = function (numCards) {
+Hud.prototype.render = function (numCards, currentPlayer) {
   var $remainingCardsSpan = this.remainingCardsSpan(numCards),
       $player1span = this.playerSpan(this.player1),
       $player2span = this.playerSpan(this.player2);
+
+  if (currentPlayer) {
+    var $currentPlayerSpan = (currentPlayer == this.player1 ? $player1span : $player2span);
+    $currentPlayerSpan.addClass('active');
+  }
 
   this.$el.html($remainingCardsSpan)
           .append($player1span)
