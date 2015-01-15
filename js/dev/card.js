@@ -3,7 +3,7 @@ function Card (suit, number) {
   this.number = number;
 }
 
-Card.prototype.spanTag = function () {
+Card.prototype.span = function () {
   return $('<span>').append(this.suitSyms(this.suit))
                     .append(this.numSyms(this.number));
 };
@@ -23,10 +23,10 @@ Card.prototype.divTag = function () {
 };
 
 Card.prototype.htmlTag = function () {
-  var spanTag = this.spanTag(),
+  var $span = this.span(),
       divTag = this.divTag();
 
-  divTag.append(spanTag);
+  divTag.append($span);
 
   return divTag[0];
 };
@@ -51,9 +51,6 @@ Card.SUIT_SYMBOLS = {
 Card.NUMBER_SYMBOLS = {
   two:   "2",
   three: "3",
-};
-
-/*
   four:  "4",
   five:  "5",
   six:   "6",
@@ -65,4 +62,5 @@ Card.NUMBER_SYMBOLS = {
   queen: "Q",
   king : "K",
   ace  : "A"
-  */
+};
+

@@ -7,9 +7,32 @@ body {
   width: 970px;
 }
 
+.hud {
+  background: white;
+  height: 30px;
+  font-family: 'Open Sans', sans-serif;
+  text-align: center;
+}
+
+.hud > span {
+  padding-top: 3px;
+  padding-bottom: 3px;
+  display: inline-block;
+}
+
+.hud > span.player1 {
+  float: left;
+  margin-left: 5%
+}
+
+.hud > span.player2 {
+  float: right;
+  margin-right: 5%
+}
+
 .gutter {
   clear: both;
-  height: 50px;
+  height: 30px;
 }
 
 .card {

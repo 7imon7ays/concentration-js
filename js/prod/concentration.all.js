@@ -54,7 +54,7 @@ function Card (suit, number) {
   this.number = number;
 }
 
-Card.prototype.spanTag = function () {
+Card.prototype.span = function () {
   return $('<span>').append(this.suitSyms(this.suit))
                     .append(this.numSyms(this.number));
 };
@@ -74,10 +74,10 @@ Card.prototype.divTag = function () {
 };
 
 Card.prototype.htmlTag = function () {
-  var spanTag = this.spanTag(),
+  var $span = this.span(),
       divTag = this.divTag();
 
-  divTag.append(spanTag);
+  divTag.append($span);
 
   return divTag[0];
 };
@@ -102,9 +102,6 @@ Card.SUIT_SYMBOLS = {
 Card.NUMBER_SYMBOLS = {
   two:   "2",
   three: "3",
-};
-
-/*
   four:  "4",
   five:  "5",
   six:   "6",
@@ -116,7 +113,8 @@ Card.NUMBER_SYMBOLS = {
   queen: "Q",
   king : "K",
   ace  : "A"
-  */
+};
+
 
 function ComputerPlayer ($cards, args) {
   Player.apply(this, [].slice.call(arguments, 1));
@@ -162,6 +160,8 @@ function Concentration () {
   this.initPlayers();
 
   this.turn = new Turn(this.board, this.player1, this.player2);
+  this.hud = null;
+  this.initHud();
 }
 
 Concentration.prototype.initBoard = function () {
@@ -181,6 +181,13 @@ Concentration.prototype.initPlayers = function () {
   this.player1 = new HumanPlayer(1, this.board);
   this.player2 = new ComputerPlayer($cards, 2, this.board);
   //this.player2 = new HumanPlayer(2, this.board);
+};
+
+Concentration.prototype.initHud = function () {
+  var $hud = $('.hud');
+
+  this.hud = new Hud($hud, this.player1, this.player2);
+  this.hud.render(this.board.numCards);
 };
 
 Concentration.prototype.play = function () {
@@ -212,6 +219,9 @@ Concentration.prototype.defer_to = function (player) {
     return game.turn.handleChoice(player, $card);
   })
   .then(function (nextOrSamePlayer) {
+    var numCards = game.board.numCards;
+
+    game.hud.render(numCards);
     turnTaken.resolve(nextOrSamePlayer);
   })
   .fail(function (err) { throw err; });
@@ -284,6 +294,37 @@ Graveyard.prototype.add = function (cardTags) {
     var tagClone = cardTag.clone();
     $graveyard.append(tagClone);
   });
+};
+
+
+function Hud ($el, player1, player2) {
+  this.$el = $el;
+  this.player1 = player1;
+  this.player2 = player2;
+}
+
+Hud.prototype.render = function (numCards) {
+  var $remainingCardsSpan = this.remainingCardsSpan(numCards),
+      $player1span = this.playerSpan(this.player1),
+      $player2span = this.playerSpan(this.player2);
+
+  this.$el.html($remainingCardsSpan)
+          .append($player1span)
+          .append($player2span);
+};
+
+Hud.prototype.playerSpan = function (player) {
+  var $span = $('<span>'),
+      content = "Player " + player.id + " Matches: "  + player.numMatches;
+
+  $span.addClass("player" + player.id)
+       .html(content);
+
+  return $span;
+};
+
+Hud.prototype.remainingCardsSpan = function (numCards) {
+  return $('<span>').append('Cards remaining: ' + numCards);
 };
 
 
@@ -392,24 +433,13 @@ $(function () {
   new Concentration().play();
 });
 
-function find(num) {
-  var $cards = $('.card'), matches = [], i;
-
-  for (i = 0; i < $cards.length; i++) {
-    if ($($cards[i]).data('number') == num) {
-      matches.push($cards[i]);
-    }
-  }
-
-  return matches;
-}
-
 
 // Superclass of ComputerPlayer and HumanPlayer
 
 function Player (id, board) {
   this.id = id;
   this.board = board;
+  this.numMatches = 0;
 }
 
 Player.prototype.takeTurn = function () {
@@ -424,6 +454,10 @@ Player.prototype.takeTurn = function () {
   });
 
   return turnTaken.promise;
+};
+
+Player.prototype.recordNewMatch = function () {
+  this.numMatches++;
 };
 
 
@@ -450,6 +484,7 @@ Turn.prototype.handleChoice = function (player, $chosenCard) {
     case "match":
       currentPlayer.confirmNextTurn()
       .then(function () {
+        currentPlayer.recordNewMatch();
         this.inspector.removeMatches(currentPlayer);
         choiceHandled.resolve(currentPlayer);
       }.bind(this))

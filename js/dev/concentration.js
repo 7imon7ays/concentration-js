@@ -7,6 +7,8 @@ function Concentration () {
   this.initPlayers();
 
   this.turn = new Turn(this.board, this.player1, this.player2);
+  this.hud = null;
+  this.initHud();
 }
 
 Concentration.prototype.initBoard = function () {
@@ -26,6 +28,13 @@ Concentration.prototype.initPlayers = function () {
   this.player1 = new HumanPlayer(1, this.board);
   this.player2 = new ComputerPlayer($cards, 2, this.board);
   //this.player2 = new HumanPlayer(2, this.board);
+};
+
+Concentration.prototype.initHud = function () {
+  var $hud = $('.hud');
+
+  this.hud = new Hud($hud, this.player1, this.player2);
+  this.hud.render(this.board.numCards);
 };
 
 Concentration.prototype.play = function () {
@@ -57,6 +66,9 @@ Concentration.prototype.defer_to = function (player) {
     return game.turn.handleChoice(player, $card);
   })
   .then(function (nextOrSamePlayer) {
+    var numCards = game.board.numCards;
+
+    game.hud.render(numCards);
     turnTaken.resolve(nextOrSamePlayer);
   })
   .fail(function (err) { throw err; });

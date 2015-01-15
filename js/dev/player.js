@@ -3,6 +3,7 @@
 function Player (id, board) {
   this.id = id;
   this.board = board;
+  this.numMatches = 0;
 }
 
 Player.prototype.takeTurn = function () {
@@ -17,5 +18,9 @@ Player.prototype.takeTurn = function () {
   });
 
   return turnTaken.promise;
+};
+
+Player.prototype.recordNewMatch = function () {
+  this.numMatches++;
 };
 
