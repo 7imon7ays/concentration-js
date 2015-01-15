@@ -21,7 +21,7 @@ Concentration.prototype.initBoard = function () {
 Concentration.prototype.initPlayers = function () {
   var $cards = $('.card');
 
-  this.player1 = new HumanPlayer($cards, 1, this.board);
+  this.player1 = new HumanPlayer(1, this.board);
   this.player2 = new ComputerPlayer($cards, 2, this.board);
 };
 
