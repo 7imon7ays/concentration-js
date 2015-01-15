@@ -22,8 +22,9 @@ Board.prototype.layCards = function () {
   this.render(cardTags);
 };
 
-Board.prototype.show = function (cardTag) {
-  cardTag.removeClass('hidden');
+Board.prototype.show = function ($card) {
+  $card.trigger('showing');
+  $card.removeClass('hidden');
 };
 
 Board.prototype.hide = function (cardTag) {

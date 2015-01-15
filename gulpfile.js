@@ -4,7 +4,7 @@ var gulp = require('gulp'),
     watch = require('gulp-watch');
 
 var paths = {
-  scripts: ['./js/dev/*.js']
+  scripts: ['./js/dev/*.js', './js/vendor/*.js']
 };
 
 gulp.task('scripts', function () {

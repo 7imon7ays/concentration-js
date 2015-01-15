@@ -1,6 +1,8 @@
 function ComputerPlayer ($cards, args) {
   Player.apply(this, [].slice.call(arguments, 1));
   this.$cards = $cards;
+  this.memory = new LRUCache(5);
+  this.watchCards();
 }
 
 ComputerPlayer.prototype = Object.create(Player.prototype);
@@ -28,6 +30,15 @@ ComputerPlayer.prototype.confirmNextTurn = function () {
   }, this.constructor.THINK_TIME);
 
   return confirmed.promise;
+};
+
+ComputerPlayer.prototype.watchCards = function () {
+  this.$cards.on('showing', function (evnt) {
+    var $card = $(evnt.target),
+        cardNumber = $card.data('number');
+
+    this.memory.put($card, cardNumber);
+  }.bind(this));
 };
 
 ComputerPlayer.THINK_TIME = 1000;
