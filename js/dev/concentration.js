@@ -1,17 +1,28 @@
 function Concentration () {
-  var $graveyardEl = $('.graveyard'),
-      graveyard = new Graveyard($graveyardEl);
+  this.board = null;
+  this.initBoard();
 
-  this.$boardEl = $('.board');
-  this.board = new Board(this.$boardEl, graveyard);
   this.inspector = new Inspector(this.board);
-  this.player1 = new Player(1, this.board);
-  this.player2 = new Player(2, this.board);
+
+  this.player1 = null;
+  this.player2 = null;
+  this.initPlayers();
 }
 
-Concentration.prototype.start = function () {
+Concentration.prototype.initBoard = function () {
+  var $boardEl = $('.board'),
+      $graveyardEl = $('.graveyard'),
+      graveyard = new Graveyard($graveyardEl);
+
+  this.board = new Board($boardEl, graveyard);
   this.board.layCards();
-  this.play();
+};
+
+Concentration.prototype.initPlayers = function () {
+  var $cards = $('.card');
+
+  this.player1 = new HumanPlayer($cards, 1, this.board);
+  this.player2 = new ComputerPlayer($cards, 2, this.board);
 };
 
 Concentration.prototype.play = function () {
@@ -89,6 +100,6 @@ Concentration.prototype.notice = function (msg) {
 };
 
 $(function () {
-  new Concentration().start();
+  new Concentration().play();
 });
 

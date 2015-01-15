@@ -115,20 +115,66 @@ Card.NUMBER_SYMBOLS = {
   ace  : "A"
   */
 
-function Concentration () {
-  var $graveyardEl = $('.graveyard'),
-      graveyard = new Graveyard($graveyardEl);
-
-  this.$boardEl = $('.board');
-  this.board = new Board(this.$boardEl, graveyard);
-  this.inspector = new Inspector(this.board);
-  this.player1 = new Player(1, this.board);
-  this.player2 = new Player(2, this.board);
+function ComputerPlayer ($cards, args) {
+  Player.apply(this, [].slice.call(arguments, 1));
+  this.$cards = $cards;
 }
 
-Concentration.prototype.start = function () {
+ComputerPlayer.prototype = Object.create(Player.prototype);
+ComputerPlayer.prototype.constructor = ComputerPlayer;
+
+ComputerPlayer.prototype.getInput = function () {
+  var chose = Q.defer(),
+      $availableCards = this.$cards.filter('.hidden');
+      // Just pick a random, non-hidden card for now
+      chosenCard = $availableCards[Math.floor(Math.random() *
+          $availableCards.length)];
+
+  setTimeout(function () {
+    chose.resolve($(chosenCard));
+  }, this.constructor.THINK_TIME);
+
+  return chose.promise;
+};
+
+ComputerPlayer.prototype.confirmNextTurn = function () {
+  var confirmed = Q.defer();
+
+  setTimeout(function () {
+    confirmed.resolve();
+  }, this.constructor.THINK_TIME);
+
+  return confirmed.promise;
+};
+
+ComputerPlayer.THINK_TIME = 1000;
+
+
+function Concentration () {
+  this.board = null;
+  this.initBoard();
+
+  this.inspector = new Inspector(this.board);
+
+  this.player1 = null;
+  this.player2 = null;
+  this.initPlayers();
+}
+
+Concentration.prototype.initBoard = function () {
+  var $boardEl = $('.board'),
+      $graveyardEl = $('.graveyard'),
+      graveyard = new Graveyard($graveyardEl);
+
+  this.board = new Board($boardEl, graveyard);
   this.board.layCards();
-  this.play();
+};
+
+Concentration.prototype.initPlayers = function () {
+  var $cards = $('.card');
+
+  this.player1 = new HumanPlayer($cards, 1, this.board);
+  this.player2 = new ComputerPlayer($cards, 2, this.board);
 };
 
 Concentration.prototype.play = function () {
@@ -206,7 +252,7 @@ Concentration.prototype.notice = function (msg) {
 };
 
 $(function () {
-  new Concentration().start();
+  new Concentration().play();
 });
 
 
@@ -265,6 +311,42 @@ Graveyard.prototype.add = function (cardTags) {
     var tagClone = cardTag.clone();
     $graveyard.append(tagClone);
   });
+};
+
+
+// Inherits from Player class
+function HumanPlayer(args) {
+  Player.apply(this, arguments);
+}
+
+HumanPlayer.prototype = Object.create(Player.prototype);
+HumanPlayer.prototype.constructor = Player;
+
+HumanPlayer.prototype.getInput = function () {
+  var clicked = Q.defer();
+  this.board.on('click', function (evnt) {
+    var $card = $(evnt.target);
+
+    // Ignore click if player didn't click a card
+    // Or clicked a revealed card
+    if (!$card.hasClass('card') || !$card.hasClass('hidden')) return;
+
+    this.board.off('click');
+    clicked.resolve($card);
+  }.bind(this));
+
+  return clicked.promise;
+};
+
+HumanPlayer.prototype.confirmNextTurn = function () {
+  var $window = $(window), clicked = Q.defer();
+
+  $window.on('click', function () {
+    clicked.resolve();
+    $window.off('click');
+  });
+
+  return clicked.promise;
 };
 
 
@@ -333,6 +415,8 @@ Inspector.prototype.flush = function () {
 Inspector.MAX_MATCHES = 2;
 
 
+// Superclass of ComputerPlayer and HumanPlayer
+
 function Player (id, board) {
   this.id = id;
   this.board = board;
@@ -344,36 +428,12 @@ Player.prototype.takeTurn = function () {
   this.getInput()
   .then(function ($card) {
     turnTaken.resolve($card);
+  })
+  .fail(function (err) {
+    throw err;
   });
 
   return turnTaken.promise;
-};
-
-Player.prototype.getInput = function () {
-  var clicked = Q.defer();
-  this.board.on('click', function (evnt) {
-    var $card = $(evnt.target);
-
-    // Ignore click if player didn't click a card
-    // Or clicked a revealed card
-    if (!$card.hasClass('card') || !$card.hasClass('hidden')) return;
-
-    this.board.off('click');
-    clicked.resolve($card);
-  }.bind(this));
-
-  return clicked.promise;
-};
-
-Player.prototype.confirmNextTurn = function () {
-  var $window = $(window), clicked = Q.defer();
-
-  $window.on('click', function () {
-    clicked.resolve();
-    $window.off('click');
-  });
-
-  return clicked.promise;
 };
 
 
