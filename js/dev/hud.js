@@ -33,3 +33,10 @@ Hud.prototype.remainingCardsSpan = function (numCards) {
   return $('<span>').append('Cards remaining: ' + numCards);
 };
 
+Hud.prototype.announceWinner = function (msg) {
+  var $span = $('<span>');
+  $span.html(msg);
+
+  this.$el.html($span);
+};
+

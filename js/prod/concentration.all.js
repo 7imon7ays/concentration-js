@@ -233,6 +233,28 @@ Concentration.prototype.initHud = function () {
   this.hud.render(this.board.numCards);
 };
 
+Concentration.prototype.start = function () {
+  this.play()
+      .then(function () {
+        var msg = this.gameEndMessage();
+        this.hud.announceWinner(msg);
+      }.bind(this))
+      .fail(function (err) { throw err; });
+};
+
+Concentration.prototype.gameEndMessage = function () {
+    var player1Score = this.player1.numMatches,
+        player2Score = this.player2.numMatches;
+
+    if (player1Score > player2Score) {
+      return "Player 1 wins";
+    } else if (player2Score > player1Score) {
+      return "Player 2 wins";
+    } else {
+      return "Draw";
+    }
+};
+
 Concentration.prototype.play = function () {
   var game = this,
       gameOver = Q.defer();
@@ -368,6 +390,13 @@ Hud.prototype.remainingCardsSpan = function (numCards) {
   return $('<span>').append('Cards remaining: ' + numCards);
 };
 
+Hud.prototype.announceWinner = function (msg) {
+  var $span = $('<span>');
+  $span.html(msg);
+
+  this.$el.html($span);
+};
+
 
 // Inherits from Player class
 function HumanPlayer(args) {
@@ -471,7 +500,7 @@ Inspector.MAX_MATCHES = 2;
 
 
 $(function () {
-  new Concentration().play();
+  new Concentration().start();
 });
 
 

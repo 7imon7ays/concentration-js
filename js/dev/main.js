@@ -1,4 +1,4 @@
 $(function () {
-  new Concentration().play();
+  new Concentration().start();
 });
 
