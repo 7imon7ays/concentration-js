@@ -1,9 +1,9 @@
 # Concentration.js
 
+![An Exciting Game of Concentration!](http://academicadvancement.org/wp-content/uploads/2013/08/card-games.jpg)
+
 An old card game written for the browser.
 Running at [simonchaffetz.com/concentration-js][live demo]
-
-![An Exciting Game of Concentration!](http://upload.wikimedia.org/wikipedia/commons/6/6d/Memory_%28game%29.JPG)
 
 [live demo]: http://www.simonchaffetz.com/concentration-js
 
@@ -39,7 +39,16 @@ to one of the source files.
 [gulp]: http://gulpjs.com/
 [npm]: https://www.npmjs.com/
 
-## Promises
+## The Good Stuff
+
+### AI
+
+The computer AI uses [this neat JavaScript LRU Cache][lru cache] to track up to 20 cards. It subscribes to a 'showing' event triggered whenever a card is shown to keep it decoupled from the game logic. See it in action [here][watch cards].
+
+[lru cache]: https://github.com/rsms/js-lru
+[watch cards]: https://github.com/7imon7ays/concentration-js/blob/master/js/dev/computer_player.js#L39
+
+### Promises
 
 A lot of the game logic is asynchronous. The game waits for the player to pick a
 card, then waits for them to pick another, and then waits for them to click a
@@ -49,4 +58,6 @@ be callback hell.
 Concentration.js uses [Q][q]'s promises to keep the code sane. For example check out the [turn loop][turn loop].
 
 [q]: https://github.com/kriskowal/q
-[turn loop]: js/dev/concentration.js#L32
+[turn loop]: js/dev/concentration.js#L71
+
+
