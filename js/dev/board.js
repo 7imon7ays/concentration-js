@@ -44,8 +44,9 @@ Board.prototype.remove = function ($cards, player) {
 
   graveyard.add($cards);
   this.numCards -= $cards.length;
-  $cards.forEach(function ($cardTags) {
-    $cardTags.addClass('removed');
+  $cards.forEach(function ($card) {
+    $card.addClass('removed');
+    $card.trigger('matched');
   });
 };
 

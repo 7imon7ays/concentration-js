@@ -26,8 +26,9 @@ Concentration.prototype.initPlayers = function () {
   var $cards = $('.card');
 
   this.player1 = new HumanPlayer(1, this.board);
-  this.player2 = new ComputerPlayer($cards, 2, this.board);
   //this.player2 = new HumanPlayer(2, this.board);
+  //this.player1 = new ComputerPlayer($cards, 20, 1, this.board);
+  this.player2 = new ComputerPlayer($cards, 20, 2, this.board);
 };
 
 Concentration.prototype.initHud = function () {
@@ -46,8 +47,6 @@ Concentration.prototype.play = function () {
   return gameOver.promise;
 
   function _prompt(currentPlayer) {
-    game.notice('Waiting on: Player ' + currentPlayer.id);
-
     if (game.endCondition()) return gameOver.resolve();
 
     game.defer_to(currentPlayer)
@@ -77,11 +76,6 @@ Concentration.prototype.defer_to = function (player) {
 };
 
 Concentration.prototype.endCondition = function () {
-  // Game never ends for now
-  return false;
-};
-
-Concentration.prototype.notice = function (msg) {
-  console.log(msg);
+  return !this.board.numCards;
 };
 

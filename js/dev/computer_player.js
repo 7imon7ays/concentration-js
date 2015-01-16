@@ -1,7 +1,7 @@
-function ComputerPlayer ($cards, args) {
-  Player.apply(this, [].slice.call(arguments, 1));
+function ComputerPlayer ($cards, memoryLimit, args) {
+  Player.apply(this, [].slice.call(arguments, 2));
   this.$cards = $cards;
-  this.memory = new LRUCache(5);
+  this.memory = new LRUCache(memoryLimit);
   this.watchCards();
 }
 
@@ -9,11 +9,15 @@ ComputerPlayer.prototype = Object.create(Player.prototype);
 ComputerPlayer.prototype.constructor = ComputerPlayer;
 
 ComputerPlayer.prototype.getInput = function () {
-  var chose = Q.defer(),
-      $availableCards = this.$cards.filter('.hidden');
-      // Just pick a random, non-hidden card for now
-      chosenCard = $availableCards[Math.floor(Math.random() *
-          $availableCards.length)];
+  var chose = Q.defer(), chosenCard;
+
+  chosenCard = this.findMatchInMemory();
+
+  if (!chosenCard) {
+    // Pick a random, non-hidden card if no matches found
+    var  $availableCards = this.$cards.filter('.hidden');
+    chosenCard = $availableCards[Math.floor(Math.random() * $availableCards.length)];
+  }
 
   setTimeout(function () {
     chose.resolve($(chosenCard));
@@ -34,11 +38,36 @@ ComputerPlayer.prototype.confirmNextTurn = function () {
 
 ComputerPlayer.prototype.watchCards = function () {
   this.$cards.on('showing', function (evnt) {
-    var $card = $(evnt.target),
-        cardNumber = $card.data('number');
+    var card = evnt.target,
+        cardNumber = $(card).data('number');
 
-    this.memory.put($card, cardNumber);
+    // For some reason removed cards still
+    // appear in the matching loop
+    this.memory.put(card, cardNumber);
   }.bind(this));
+
+  this.$cards.on('matched', function (evnt) {
+    var card = evnt.target;
+
+    this.memory.remove(card);
+  }.bind(this));
+};
+
+ComputerPlayer.prototype.findMatchInMemory = function () {
+  var seenCards = {}, foundCard;
+  this.memory.forEach(function (card, number) {
+    // Dirty fix to removal problem:
+    // Skip cards here that are already removed
+    if ($(card).hasClass('removed')) {
+    } else if (seenCards[number] && seenCards[number] != card) {
+      var hiddenCard = ($(card).hasClass('hidden') ? card : seenCards[number]);
+      foundCard = hiddenCard;
+    } else {
+      seenCards[number] = card;
+    }
+  });
+
+  return foundCard;
 };
 
 ComputerPlayer.THINK_TIME = 1000;
