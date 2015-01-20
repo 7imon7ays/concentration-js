@@ -13,6 +13,7 @@
   Card.prototype.divTag = function () {
     var $div = $('<div>');
     $div.addClass(this.constructor.htmlClass)
+        .addClass('round-corner')
         .addClass('hidden');
 
     if (this.suit == "hearts" || this.suit == "diamonds") {

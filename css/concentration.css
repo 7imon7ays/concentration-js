@@ -12,7 +12,6 @@ body {
   height: 30px;
   font-family: 'Open Sans', sans-serif;
   text-align: center;
-  border-radius: 3px;
 }
 
 .hud > span {
@@ -31,6 +30,19 @@ body {
   margin-right: 5%
 }
 
+.button-green {
+  margin-top: 2px;
+  background-color: #31ba00;
+  font-size: 14px;
+  font-family: inherit;
+  text-transform: uppercase;
+  color: white;
+  border: none;
+  box-shadow: 0 1px 1px 0px #000;
+  cursor: pointer;
+  transition: transform .05s ease-in-out;
+}
+
 .active {
   color: #88bfe8;
 }
@@ -41,7 +53,6 @@ body {
 }
 
 .card {
-  border-radius: 3px;
   margin: 3px;
   display: inline-block;
   font-size: 18px;
@@ -88,5 +99,9 @@ body {
 .graveyard#two {
   float: right;
   width: 450px;
+}
+
+.round-corner {
+  border-radius: 3px;
 }
 
