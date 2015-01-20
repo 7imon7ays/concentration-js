@@ -1,13 +1,17 @@
-function Graveyard ($el) {
-  this.$el = $el;
-}
+(function () {
+  if (typeof Concentration === "undefined") window.Concentration = {};
 
-Graveyard.prototype.add = function (cardTags) {
-  var $graveyard = this.$el;
+  var Graveyard = Concentration.Graveyard = function ($el) {
+    this.$el = $el;
+  };
 
-  cardTags.forEach(function (cardTag) {
-    var tagClone = cardTag.clone();
-    $graveyard.append(tagClone);
-  });
-};
+  Graveyard.prototype.add = function (cardTags) {
+    var $graveyard = this.$el;
+
+    cardTags.forEach(function (cardTag) {
+      var tagClone = cardTag.clone();
+      $graveyard.append(tagClone);
+    });
+  };
+})();
 

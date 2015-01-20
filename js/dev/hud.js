@@ -1,42 +1,46 @@
-function Hud ($el, player1, player2) {
-  this.$el = $el;
-  this.player1 = player1;
-  this.player2 = player2;
-}
+(function () {
+  if (typeof Concentration === "undefined") window.Concentration = {};
 
-Hud.prototype.render = function (numCards, currentPlayer) {
-  var $remainingCardsSpan = this.remainingCardsSpan(numCards),
-      $player1span = this.playerSpan(this.player1),
-      $player2span = this.playerSpan(this.player2);
+  var Hud = Concentration.Hud = function ($el, player1, player2) {
+    this.$el = $el;
+    this.player1 = player1;
+    this.player2 = player2;
+  };
 
-  if (currentPlayer) {
-    var $currentPlayerSpan = (currentPlayer == this.player1 ? $player1span : $player2span);
-    $currentPlayerSpan.addClass('active');
-  }
+  Hud.prototype.render = function (numCards, currentPlayer) {
+    var $remainingCardsSpan = this.remainingCardsSpan(numCards),
+        $player1span = this.playerSpan(this.player1),
+        $player2span = this.playerSpan(this.player2);
 
-  this.$el.html($remainingCardsSpan)
-          .append($player1span)
-          .append($player2span);
-};
+    if (currentPlayer) {
+      var $currentPlayerSpan = (currentPlayer == this.player1 ? $player1span : $player2span);
+      $currentPlayerSpan.addClass('active');
+    }
 
-Hud.prototype.playerSpan = function (player) {
-  var $span = $('<span>'),
-      content = "Player " + player.id + " Matches: "  + player.numMatches;
+    this.$el.html($remainingCardsSpan)
+            .append($player1span)
+            .append($player2span);
+  };
 
-  $span.addClass("player" + player.id)
-       .html(content);
+  Hud.prototype.playerSpan = function (player) {
+    var $span = $('<span>'),
+        content = "Player " + player.id + " Matches: "  + player.numMatches;
 
-  return $span;
-};
+    $span.addClass("player" + player.id)
+         .html(content);
 
-Hud.prototype.remainingCardsSpan = function (numCards) {
-  return $('<span>').append('Cards remaining: ' + numCards);
-};
+    return $span;
+  };
 
-Hud.prototype.announceWinner = function (msg) {
-  var $span = $('<span>');
-  $span.html(msg);
+  Hud.prototype.remainingCardsSpan = function (numCards) {
+    return $('<span>').append('Cards remaining: ' + numCards);
+  };
 
-  this.$el.html($span);
-};
+  Hud.prototype.announceWinner = function (msg) {
+    var $span = $('<span>');
+    $span.html(msg);
+
+    this.$el.html($span);
+  };
+})();
 

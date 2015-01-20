@@ -1,64 +1,68 @@
-function Inspector (board) {
-  this.board = board;
-  this.flippedCards = [];
-}
+(function () {
+   if (typeof Concentration === "undefined") window.Concentration = {};
 
-Inspector.prototype.evaluateChoice = function ($card) {
-  var outcome = "continue";
+  var Inspector = Concentration.Inspector = function (board) {
+    this.board = board;
+    this.flippedCards = [];
+  };
 
-  this.flippedCards.push($card);
-  this.inspect($card);
-  if (this.isShowingMax()) {
-    outcome = this.compareCards();
-  }
+  Inspector.prototype.evaluateChoice = function ($card) {
+    var outcome = "continue";
 
-  return outcome;
-};
+    this.flippedCards.push($card);
+    this.inspect($card);
+    if (this.isShowingMax()) {
+      outcome = this.compareCards();
+    }
 
-Inspector.prototype.compareCards = function () {
-  if (_cardsHaveSameNumber(this.flippedCards)) {
-    // Flush out flipped cards by setting length to 0
-    return "match";
-  } else {
-    return "miss";
-  }
+    return outcome;
+  };
 
-  // Reduce cards to 'false' unless they all have the same number
-  function _cardsHaveSameNumber (cards) {
-    return !!cards.reduce(function (prevCard, card) {
-      if (prevCard.data && prevCard.data('number') == card.data('number')) {
-        return card;
-      }
+  Inspector.prototype.compareCards = function () {
+    if (_cardsHaveSameNumber(this.flippedCards)) {
+      // Flush out flipped cards by setting length to 0
+      return "match";
+    } else {
+      return "miss";
+    }
 
-      return false;
-    });
-  }
-};
+    // Reduce cards to 'false' unless they all have the same number
+    function _cardsHaveSameNumber (cards) {
+      return !!cards.reduce(function (prevCard, card) {
+        if (prevCard.data && prevCard.data('number') == card.data('number')) {
+          return card;
+        }
 
-Inspector.prototype.inspect = function ($card) {
-  this.board.show($card);
-};
+        return false;
+      });
+    }
+  };
 
-Inspector.prototype.isShowingMax = function () {
-  return this.flippedCards.length >= this.constructor.MAX_MATCHES;
-};
+  Inspector.prototype.inspect = function ($card) {
+    this.board.show($card);
+  };
 
-Inspector.prototype.removeMatches = function (player) {
-  this.board.remove(this.flippedCards, player);
-  this.flush();
-};
+  Inspector.prototype.isShowingMax = function () {
+    return this.flippedCards.length >= this.constructor.MAX_MATCHES;
+  };
 
-Inspector.prototype.hideCards = function () {
-  this.flippedCards.forEach(function($card) {
-    this.board.hide($card);
-  }.bind(this));
+  Inspector.prototype.removeMatches = function (player) {
+    this.board.remove(this.flippedCards, player);
+    this.flush();
+  };
 
-  this.flush();
-};
+  Inspector.prototype.hideCards = function () {
+    this.flippedCards.forEach(function($card) {
+      this.board.hide($card);
+    }.bind(this));
 
-Inspector.prototype.flush = function () {
-  this.flippedCards.length = 0;
-};
+    this.flush();
+  };
 
-Inspector.MAX_MATCHES = 2;
+  Inspector.prototype.flush = function () {
+    this.flippedCards.length = 0;
+  };
+
+  Inspector.MAX_MATCHES = 2;
+})();
 

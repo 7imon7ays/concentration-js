@@ -1,103 +1,107 @@
-function Concentration () {
-  this.board = null;
-  this.initBoard();
+(function () {
+  if (typeof Concentration === "undefined") window.Concentration = {};
+  
+  var Game = Concentration.Game = function () {
+    this.board = null;
+    this.initBoard();
 
-  this.player1 = null;
-  this.player2 = null;
-  this.initPlayers();
+    this.player1 = null;
+    this.player2 = null;
+    this.initPlayers();
 
-  this.turn = new Turn(this.board, this.player1, this.player2);
-  this.hud = null;
-  this.initHud();
-}
+    this.turn = new Concentration.Turn(this.board, this.player1, this.player2);
+    this.hud = null;
+    this.initHud();
+  };
 
-Concentration.prototype.initBoard = function () {
-  var $boardEl = $('.board'),
-      $graveyard1El = $('.graveyard#one'),
-      $graveyard2El = $('.graveyard#two'),
-      graveyard1 = new Graveyard($graveyard1El);
-      graveyard2 = new Graveyard($graveyard2El);
+  Game.prototype.initBoard = function () {
+    var $boardEl = $('.board'),
+        $graveyard1El = $('.graveyard#one'),
+        $graveyard2El = $('.graveyard#two'),
+        graveyard1 = new Concentration.Graveyard($graveyard1El);
+        graveyard2 = new Concentration.Graveyard($graveyard2El);
 
-  this.board = new Board($boardEl, graveyard1, graveyard2);
-  this.board.layCards();
-};
+    this.board = new Concentration.Board($boardEl, graveyard1, graveyard2);
+    this.board.layCards();
+  };
 
-Concentration.prototype.initPlayers = function () {
-  var $cards = $('.card');
+  Game.prototype.initPlayers = function () {
+    var $cards = $('.card');
 
-  this.player1 = new HumanPlayer(1, this.board);
-  //this.player2 = new HumanPlayer(2, this.board);
-  //this.player1 = new ComputerPlayer($cards, 20, 1, this.board);
-  this.player2 = new ComputerPlayer($cards, 20, 2, this.board);
-};
+    this.player1 = new Concentration.HumanPlayer(1, this.board);
+    //this.player2 = new Concentration.HumanPlayer(2, this.board);
+    //this.player1 = new Concentration.ComputerPlayer($cards, 20, 1, this.board);
+    this.player2 = new Concentration.ComputerPlayer($cards, 20, 2, this.board);
+  };
 
-Concentration.prototype.initHud = function () {
-  var $hud = $('.hud');
+  Game.prototype.initHud = function () {
+    var $hud = $('.hud');
 
-  this.hud = new Hud($hud, this.player1, this.player2);
-  this.hud.render(this.board.numCards);
-};
+    this.hud = new Concentration.Hud($hud, this.player1, this.player2);
+    this.hud.render(this.board.numCards);
+  };
 
-Concentration.prototype.start = function () {
-  this.play()
-      .then(function () {
-        var msg = this.gameEndMessage();
-        this.hud.announceWinner(msg);
-      }.bind(this))
+  Game.prototype.start = function () {
+    this.play()
+        .then(function () {
+          var msg = this.gameEndMessage();
+          this.hud.announceWinner(msg);
+        }.bind(this))
+        .fail(function (err) { throw err; });
+  };
+
+  Game.prototype.gameEndMessage = function () {
+      var player1Score = this.player1.numMatches,
+          player2Score = this.player2.numMatches;
+
+      if (player1Score > player2Score) {
+        return "Player 1 wins";
+      } else if (player2Score > player1Score) {
+        return "Player 2 wins";
+      } else {
+        return "Draw";
+      }
+  };
+
+  Game.prototype.play = function () {
+    var game = this,
+        gameOver = Q.defer();
+
+    _prompt(this.player1);
+
+    return gameOver.promise;
+
+    function _prompt(currentPlayer) {
+      if (game.endCondition()) return gameOver.resolve();
+
+      game.defer_to(currentPlayer)
+      .then(function (nextOrSamePlayer) {
+        _prompt(nextOrSamePlayer);
+      })
       .fail(function (err) { throw err; });
-};
-
-Concentration.prototype.gameEndMessage = function () {
-    var player1Score = this.player1.numMatches,
-        player2Score = this.player2.numMatches;
-
-    if (player1Score > player2Score) {
-      return "Player 1 wins";
-    } else if (player2Score > player1Score) {
-      return "Player 2 wins";
-    } else {
-      return "Draw";
     }
-};
+  };
 
-Concentration.prototype.play = function () {
-  var game = this,
-      gameOver = Q.defer();
+  Game.prototype.defer_to = function (player) {
+    var turnTaken = Q.defer(), game = this;
 
-  _prompt(this.player1);
-
-  return gameOver.promise;
-
-  function _prompt(currentPlayer) {
-    if (game.endCondition()) return gameOver.resolve();
-
-    game.defer_to(currentPlayer)
+    player.takeTurn()
+    .then(function ($card) {
+      return game.turn.handleChoice(player, $card);
+    })
     .then(function (nextOrSamePlayer) {
-      _prompt(nextOrSamePlayer);
+      var numCards = game.board.numCards;
+
+      game.hud.render(numCards, nextOrSamePlayer);
+      turnTaken.resolve(nextOrSamePlayer);
     })
     .fail(function (err) { throw err; });
-  }
-};
 
-Concentration.prototype.defer_to = function (player) {
-  var turnTaken = Q.defer(), game = this;
+    return turnTaken.promise;
+  };
 
-  player.takeTurn()
-  .then(function ($card) {
-    return game.turn.handleChoice(player, $card);
-  })
-  .then(function (nextOrSamePlayer) {
-    var numCards = game.board.numCards;
-
-    game.hud.render(numCards, nextOrSamePlayer);
-    turnTaken.resolve(nextOrSamePlayer);
-  })
-  .fail(function (err) { throw err; });
-
-  return turnTaken.promise;
-};
-
-Concentration.prototype.endCondition = function () {
-  return !this.board.numCards;
-};
+  Game.prototype.endCondition = function () {
+    return !this.board.numCards;
+  };
+})();
 

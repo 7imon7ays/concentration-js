@@ -1,35 +1,42 @@
-// Inherits from Player class
-function HumanPlayer(args) {
-  Player.apply(this, arguments);
-}
+(function () {
+  if (typeof Concentration === "undefined") window.Concentration = {};
 
-HumanPlayer.prototype = Object.create(Player.prototype);
-HumanPlayer.prototype.constructor = Player;
+  // Inherits from Player class
+  var HumanPlayer = Concentration.HumanPlayer = function (args) {
+    Concentration.Player.apply(this, arguments);
+  };
 
-HumanPlayer.prototype.getInput = function () {
-  var clicked = Q.defer();
-  this.board.on('click', function (evnt) {
-    var $card = $(evnt.target);
+  // Not ideal because Player class must be declared first.
+  // Can't wait for doc ready either lest HumanPlayer proto gets overriden
+  // Investigate more flexible inheritance
+  HumanPlayer.prototype = Object.create(Concentration.Player.prototype);
+  HumanPlayer.prototype.constructor = HumanPlayer;
 
-    // Ignore click if player didn't click a card
-    // Or clicked a revealed card
-    if (!$card.hasClass('card') || !$card.hasClass('hidden')) return;
+  HumanPlayer.prototype.getInput = function () {
+    var clicked = Q.defer();
+    this.board.on('click', function (evnt) {
+      var $card = $(evnt.target);
 
-    this.board.off('click');
-    clicked.resolve($card);
-  }.bind(this));
+      // Ignore click if player didn't click a card
+      // Or clicked a revealed card
+      if (!$card.hasClass('card') || !$card.hasClass('hidden')) return;
 
-  return clicked.promise;
-};
+      this.board.off('click');
+      clicked.resolve($card);
+    }.bind(this));
 
-HumanPlayer.prototype.confirmNextTurn = function () {
-  var $window = $(window), clicked = Q.defer();
+    return clicked.promise;
+  };
 
-  $window.on('click', function () {
-    clicked.resolve();
-    $window.off('click');
-  });
+  HumanPlayer.prototype.confirmNextTurn = function () {
+    var $window = $(window), clicked = Q.defer();
 
-  return clicked.promise;
-};
+    $window.on('click', function () {
+      clicked.resolve();
+      $window.off('click');
+    });
+
+    return clicked.promise;
+  };
+})();
 
