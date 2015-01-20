@@ -13,7 +13,23 @@
     </head>
     <body>
       <div class="content">
-        <div class="hud"></div>
+        <div class="hud">
+          <span class="player1">
+            <span>Player 1:</span>
+            <input id="player_1_human" type="radio" name="player_1_type" checked>
+            <label for="player_1_human">Human</label>
+            <label for="player_1_computer">Machine</label>
+            <input id="player_1_computer" type="radio" name="player_1_type">
+          </span>
+          <input type="submit" class="start" value="Start">
+          <span class="player2">
+            <span>Player 2:</span>
+            <input id="player_2_human" type="radio" name="player_2_type">
+            <label for="player_2_human">Human</label>
+            <label for="player_2_computer">Machine</label>
+            <input id="player_2_computer" type="radio" name="player_2_type" checked>
+          </span>
+        </div>
         <div class="gutter"></div>
         <div class="board"></div>
         <div class="gutter"></div>

@@ -7,11 +7,32 @@
 
     this.player1 = null;
     this.player2 = null;
-    this.initPlayers();
-
-    this.turn = new Concentration.Turn(this.board, this.player1, this.player2);
+    this.turn = null;
     this.hud = null;
-    this.initHud();
+
+    this.listenForPlayerOptions()
+        .then(function (playerOptions) {
+          this.start(playerOptions);
+        }.bind(this))
+        .fail(function (err) { throw err; });
+  };
+
+  Game.prototype.listenForPlayerOptions = function () {
+    var playersSelected = Q.defer();
+
+    $("input.start").on("click", function () {
+      var $hud = $(".hud"),
+          player1IsHuman = $hud.find("input#player_1_human").prop("checked"),
+          player2IsHuman = $hud.find("input#player_2_human").prop("checked"),
+          playerOptions = {
+            humanPlayer1: player1IsHuman,
+            humanPlayer2: player2IsHuman
+          };
+
+    playersSelected.resolve(playerOptions);
+    });
+
+    return playersSelected.promise;
   };
 
   Game.prototype.initBoard = function () {
@@ -25,13 +46,22 @@
     this.board.layCards();
   };
 
-  Game.prototype.initPlayers = function () {
-    var $cards = $('.card');
+  Game.prototype.initPlayers = function (playerOptions) {
+    var HumPlay = Concentration.HumanPlayer,
+        CompPlay = Concentration.ComputerPlayer,
+        $cards = $('.content .card');
 
-    this.player1 = new Concentration.HumanPlayer(1, this.board);
-    //this.player2 = new Concentration.HumanPlayer(2, this.board);
-    //this.player1 = new Concentration.ComputerPlayer($cards, 20, 1, this.board);
-    this.player2 = new Concentration.ComputerPlayer($cards, 20, 2, this.board);
+    if (playerOptions.humanPlayer1) {
+      this.player1 = new HumPlay(1, this.board);
+    } else {
+      this.player1 = new CompPlay($cards, 20, 1, this.board);
+    }
+
+    if (playerOptions.humanPlayer2) {
+      this.player2 = new HumPlay(2, this.board);
+    } else {
+      this.player2 = new CompPlay($cards, 20, 2, this.board);
+    }
   };
 
   Game.prototype.initHud = function () {
@@ -41,7 +71,11 @@
     this.hud.render(this.board.numCards);
   };
 
-  Game.prototype.start = function () {
+  Game.prototype.start = function (playerOptions) {
+    this.initPlayers(playerOptions);
+    this.turn = new Concentration.Turn(this.board, this.player1, this.player2);
+    this.initHud();
+
     this.play()
         .then(function () {
           var msg = this.gameEndMessage();
