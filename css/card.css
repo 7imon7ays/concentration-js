@@ -1,0 +1,39 @@
+.card {
+  margin: 3px;
+  display: inline-block;
+  font-size: 18px;
+  width: 3.8em;
+  height: 5em;
+  position: relative;
+  background: white;
+  box-shadow: 1px 1px 0px 1px rgba(77,77,77,1);
+}
+
+.card.hidden {
+  background: linear-gradient(to right, #88bfe8 0%,#70b0e0 100%);
+}
+
+.card > span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.card.red > span {
+  color: red;
+}
+
+.card.hidden > span {
+  visibility: hidden;
+}
+
+.card.removed {
+  background-color: rgb(199, 198, 198);
+}
+
+.card.removed > span {
+  visibility: hidden;
+}
+

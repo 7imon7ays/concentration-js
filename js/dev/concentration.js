@@ -1,4 +1,4 @@
 $(function () {
-  new Concentration.Game();
+  new Concentration.Game().listenForGameStart();
 });
 

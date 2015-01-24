@@ -8,20 +8,6 @@
     this.numMatches = 0;
   };
 
-  Player.prototype.takeTurn = function () {
-    var turnTaken = Q.defer();
-
-    this.getInput()
-    .then(function ($card) {
-      turnTaken.resolve($card);
-    })
-    .fail(function (err) {
-      throw err;
-    });
-
-    return turnTaken.promise;
-  };
-
   Player.prototype.recordNewMatch = function () {
     this.numMatches++;
   };
@@ -237,8 +223,42 @@
 
 
 $(function () {
-  new Concentration.Game();
+  new Concentration.Game().listenForGameStart();
 });
+
+
+(function () {
+  if (typeof Concentration == "undefined") window.Concentration = {};
+
+  var Config = Concentration.Config = function ($playerTypeButtons, $player1TypeButton, $player2TypeButton) {
+    this.$playerTypeButtons = $playerTypeButtons;
+    this.$player1TypeButton = $player1TypeButton;
+    this.$player2TypeButton = $player2TypeButton;
+  };
+
+  Config.prototype.listenForGameConfig = function ($playerTypeButtons) {
+    this.$playerTypeButtons.on('click', function (evnt) {
+      var $button = $(evnt.target);
+
+      $button.toggleClass('human')
+             .toggleClass('computer');
+
+      var isHuman = $button.data('ishuman');
+      $button.data('ishuman', !isHuman);
+    });
+  };
+
+  Config.prototype.gameOptions = function () {
+    return {
+      player1IsHuman: this.$player1TypeButton.data('ishuman'),
+      player2IsHuman: this.$player2TypeButton.data('ishuman')
+    };
+  };
+
+  Config.prototype.removeListeners = function () {
+    this.$player1TypeButton.off('click');
+  };
+})();
 
 
 (function () {
@@ -293,43 +313,56 @@ $(function () {
   if (typeof Concentration === "undefined") window.Concentration = {};
   
   var Game = Concentration.Game = function () {
-    this.board = null;
-    this.initBoard();
+    var $boardEl = $('.board'),
+        $graveyard1El = $('.graveyard.one'),
+        $graveyard2El = $('.graveyard.two'),
+        $hud = $('.hud'),
+        $playerTypeButtons = $('button.player_type'),
+        $player1TypeButton = $('.player.one > button.player_type'),
+        $player2TypeButton = $('.player.two > button.player_type'),
+        $startButton = $('button.start');
 
+    this.$startButton = $startButton;
+
+    this.board = null;
+    // Players are initialized after user clicks "start"
     this.player1 = null;
     this.player2 = null;
     this.turn = null;
     this.hud = null;
+    this.config = null;
+    this.initBoard($boardEl, $graveyard1El, $graveyard2El);
 
-    this.listenForPlayerOptions()
-        .then(function (playerOptions) {
-          this.start(playerOptions);
-        }.bind(this))
-        .fail(function (err) { throw err; });
+    // Bind cards after they're laid in initBoard
+    var $cards = $('.content .card');
+    this.$cards = $cards;
+
+    this.initHud($hud);
+    this.initConfig($playerTypeButtons, $player1TypeButton, $player2TypeButton);
   };
 
-  Game.prototype.listenForPlayerOptions = function () {
-    var playersSelected = Q.defer();
+  Game.prototype.initConfig = function ($playerTypeButtons, $player1TypeButton, $player2TypeButton) {
+    this.config = new Concentration.Config(
+        $playerTypeButtons,
+        $player1TypeButton,
+        $player2TypeButton);
 
-    $("input.start").on("click", function () {
-      var $hud = $(".hud"),
-          player1IsHuman = $hud.find("input#player_1_human").prop("checked"),
-          player2IsHuman = $hud.find("input#player_2_human").prop("checked"),
-          playerOptions = {
-            humanPlayer1: player1IsHuman,
-            humanPlayer2: player2IsHuman
-          };
-
-    playersSelected.resolve(playerOptions);
-    });
-
-    return playersSelected.promise;
+    this.config.listenForGameConfig();
   };
 
-  Game.prototype.initBoard = function () {
-    var $boardEl = $('.board'),
-        $graveyard1El = $('.graveyard#one'),
-        $graveyard2El = $('.graveyard#two'),
+  Game.prototype.listenForGameStart = function () {
+    this.$startButton.on('click', function () {
+      var gameOptions = this.config.gameOptions();
+
+      this.initPlayers(gameOptions);
+      this.hud.setPlayers(this.player1, this.player2);
+      this.hud.render(this.board.numCards);
+      this.config.removeListeners();
+      this.start();
+    }.bind(this));
+  };
+
+  Game.prototype.initBoard = function ($boardEl, $graveyard1El, $graveyard2El) {
         graveyard1 = new Concentration.Graveyard($graveyard1El);
         graveyard2 = new Concentration.Graveyard($graveyard2El);
 
@@ -337,42 +370,32 @@ $(function () {
     this.board.layCards();
   };
 
-  Game.prototype.initPlayers = function (playerOptions) {
-    var HumPlay = Concentration.HumanPlayer,
-        CompPlay = Concentration.ComputerPlayer,
-        $cards = $('.content .card');
+  Game.prototype.initPlayers = function (gameOptions) {
 
-    if (playerOptions.humanPlayer1) {
-      this.player1 = new HumPlay(1, this.board);
+    if (gameOptions.player1IsHuman) {
+      this.player1 = new Concentration.HumanPlayer(1, this.board);
     } else {
-      this.player1 = new CompPlay($cards, 20, 1, this.board);
+      this.player1 = new Concentration.ComputerPlayer(this.$cards, 20, 1, this.board);
     }
 
-    if (playerOptions.humanPlayer2) {
-      this.player2 = new HumPlay(2, this.board);
+    if (gameOptions.player2IsHuman) {
+      this.player2 = new Concentration.HumanPlayer(2, this.board);
     } else {
-      this.player2 = new CompPlay($cards, 20, 2, this.board);
+      this.player2 = new Concentration.ComputerPlayer(this.$cards, 20, 2, this.board);
     }
   };
 
-  Game.prototype.initHud = function () {
-    var $hud = $('.hud');
-
-    this.hud = new Concentration.Hud($hud, this.player1, this.player2);
-    this.hud.render(this.board.numCards);
+  Game.prototype.initHud = function ($hud) {
+    this.hud = new Concentration.Hud($hud);
   };
 
-  Game.prototype.start = function (playerOptions) {
-    this.initPlayers(playerOptions);
+  Game.prototype.start = function () {
     this.turn = new Concentration.Turn(this.board, this.player1, this.player2);
-    this.initHud();
-
     this.play()
-        .then(function () {
-          var msg = this.gameEndMessage();
-          this.hud.announceWinner(msg);
-        }.bind(this))
-        .fail(function (err) { throw err; });
+    .done(function () {
+      var msg = this.gameEndMessage();
+      this.hud.announceWinner(msg);
+    }.bind(this));
   };
 
   Game.prototype.gameEndMessage = function () {
@@ -397,20 +420,22 @@ $(function () {
     return gameOver.promise;
 
     function _prompt(currentPlayer) {
-      if (game.endCondition()) return gameOver.resolve();
+      if (game.isOver()) return gameOver.resolve();
 
-      game.defer_to(currentPlayer)
+      game.deferTo(currentPlayer)
       .then(function (nextOrSamePlayer) {
         _prompt(nextOrSamePlayer);
       })
-      .fail(function (err) { throw err; });
+      .fail(function (err) {
+        gameOver.reject(err);
+      });
     }
   };
 
-  Game.prototype.defer_to = function (player) {
+  Game.prototype.deferTo = function (player) {
     var turnTaken = Q.defer(), game = this;
 
-    player.takeTurn()
+    player.getInput()
     .then(function ($card) {
       return game.turn.handleChoice(player, $card);
     })
@@ -420,12 +445,14 @@ $(function () {
       game.hud.render(numCards, nextOrSamePlayer);
       turnTaken.resolve(nextOrSamePlayer);
     })
-    .fail(function (err) { throw err; });
+    .fail(function (err) {
+      turnTaken.reject(err);
+    });
 
     return turnTaken.promise;
   };
 
-  Game.prototype.endCondition = function () {
+  Game.prototype.isOver = function () {
     return !this.board.numCards;
   };
 })();
@@ -452,8 +479,13 @@ $(function () {
 (function () {
   if (typeof Concentration === "undefined") window.Concentration = {};
 
-  var Hud = Concentration.Hud = function ($el, player1, player2) {
+  var Hud = Concentration.Hud = function ($el) {
     this.$el = $el;
+    this.player1 = null;
+    this.player2 = null;
+  };
+
+  Hud.prototype.setPlayers = function (player1, player2) {
     this.player1 = player1;
     this.player2 = player2;
   };
@@ -477,7 +509,7 @@ $(function () {
     var $span = $('<span>'),
         content = "Player " + player.id + " Matches: "  + player.numMatches;
 
-    $span.addClass("player" + player.id)
+    $span.addClass("player " + this.constructor.playerIds[player.id])
          .html(content);
 
     return $span;
@@ -492,6 +524,11 @@ $(function () {
     $span.html(msg);
 
     this.$el.html($span);
+  };
+
+  Hud.playerIds = {
+    1: 'one',
+    2: 'two'
   };
 })();
 

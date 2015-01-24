@@ -7,6 +7,9 @@
       <link rel="shortcut icon" href="ace.ico">
       <title>Concentration</title>
       <link rel="stylesheet" href="css/concentration.css">
+      <link rel="stylesheet" href="css/card.css">
+      <link rel="stylesheet" href="css/graveyard.css">
+      <link rel="stylesheet" href="css/hud.css">
       <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
       <script src="http://cdnjs.cloudflare.com/ajax/libs/q.js/1.1.2/q.js"></script>
@@ -14,27 +17,29 @@
     <body>
       <div class="content">
         <div class="hud round-corner">
-          <span class="player1">
+          <span class="player one">
             <span>Player 1:</span>
-            <input id="player_1_human" type="radio" name="player_1_type" checked>
-            <label for="player_1_human">Human</label>
-            <label for="player_1_computer">Machine</label>
-            <input id="player_1_computer" type="radio" name="player_1_type">
+            <button
+              class="player_type human button-green pull-up uppercase"
+              data-ishuman="true"
+            >
+            </button>
           </span>
-          <input type="submit" class="start button-green round-corner" value="start">
-          <span class="player2">
+          <button class="start button-green uppercase">Start</button>
+          <span class="player two">
             <span>Player 2:</span>
-            <input id="player_2_human" type="radio" name="player_2_type">
-            <label for="player_2_human">Human</label>
-            <label for="player_2_computer">Machine</label>
-            <input id="player_2_computer" type="radio" name="player_2_type" checked>
+            <button
+              class="player_type computer button-green pull-up uppercase"
+              data-ishuman="false"
+            >
+            </button>
           </span>
         </div>
         <div class="gutter"></div>
         <div class="board"></div>
         <div class="gutter"></div>
-        <div class="graveyard" id="one"></div>
-        <div class="graveyard" id="two"></div>
+        <div class="graveyard one"></div>
+        <div class="graveyard two"></div>
         <div class="gutter"></div>
       </div>
       <script src="js/prod/concentration.all.js"></script>

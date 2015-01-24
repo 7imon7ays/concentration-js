@@ -1,8 +1,13 @@
 (function () {
   if (typeof Concentration === "undefined") window.Concentration = {};
 
-  var Hud = Concentration.Hud = function ($el, player1, player2) {
+  var Hud = Concentration.Hud = function ($el) {
     this.$el = $el;
+    this.player1 = null;
+    this.player2 = null;
+  };
+
+  Hud.prototype.setPlayers = function (player1, player2) {
     this.player1 = player1;
     this.player2 = player2;
   };
@@ -26,7 +31,7 @@
     var $span = $('<span>'),
         content = "Player " + player.id + " Matches: "  + player.numMatches;
 
-    $span.addClass("player" + player.id)
+    $span.addClass("player " + this.constructor.playerIds[player.id])
          .html(content);
 
     return $span;
@@ -41,6 +46,11 @@
     $span.html(msg);
 
     this.$el.html($span);
+  };
+
+  Hud.playerIds = {
+    1: 'one',
+    2: 'two'
   };
 })();
 

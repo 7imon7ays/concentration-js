@@ -1,0 +1,60 @@
+div.hud {
+  background: white;
+  height: 30px;
+  font-family: 'Open Sans', sans-serif;
+  text-align: center;
+}
+
+div.hud > span {
+  padding-top: 3px;
+  padding-bottom: 3px;
+  display: inline-block;
+}
+
+div.hud > span.player.one {
+  float: left;
+  margin-left: 5%
+}
+
+div.hud > span.player.two {
+  float: right;
+  margin-right: 5%
+}
+
+button.button-green {
+  margin-top: 2px;
+  background-color: #31ba00;
+  font-size: 14px;
+  font-family: inherit;
+  color: white;
+  border: none;
+  outline: none;
+  box-shadow: 0 1px 1px 0px #000;
+  cursor: pointer;
+  width: 6.5em;
+}
+
+button.button-green.human::before {
+  content: "human";
+}
+
+button.button-green.computer {
+  box-shadow: inset 0px 1px 1px 0px #000;
+}
+
+button.button-green.computer::before {
+  content: "computer";
+}
+
+button.pull-up {
+  margin-top: -3px;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+span.player.active {
+  color: #88bfe8;
+}
+

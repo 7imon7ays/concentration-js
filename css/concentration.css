@@ -7,98 +7,9 @@ body {
   width: 970px;
 }
 
-.hud {
-  background: white;
-  height: 30px;
-  font-family: 'Open Sans', sans-serif;
-  text-align: center;
-}
-
-.hud > span {
-  padding-top: 3px;
-  padding-bottom: 3px;
-  display: inline-block;
-}
-
-.hud > span.player1 {
-  float: left;
-  margin-left: 5%
-}
-
-.hud > span.player2 {
-  float: right;
-  margin-right: 5%
-}
-
-.button-green {
-  margin-top: 2px;
-  background-color: #31ba00;
-  font-size: 14px;
-  font-family: inherit;
-  text-transform: uppercase;
-  color: white;
-  border: none;
-  box-shadow: 0 1px 1px 0px #000;
-  cursor: pointer;
-  transition: transform .05s ease-in-out;
-}
-
-.active {
-  color: #88bfe8;
-}
-
 .gutter {
   clear: both;
   height: 30px;
-}
-
-.card {
-  margin: 3px;
-  display: inline-block;
-  font-size: 18px;
-  width: 3.8em;
-  height: 5em;
-  position: relative;
-  background: white;
-  box-shadow: 1px 1px 0px 1px rgba(77,77,77,1);
-}
-
-.card.hidden {
-  background: linear-gradient(to right, #88bfe8 0%,#70b0e0 100%);
-}
-
-.card > span {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  white-space: nowrap;
-}
-
-.card.red > span {
-  color: red;
-}
-
-.card.hidden > span {
-  visibility: hidden;
-}
-
-.card.removed {
-  background-color: rgb(199, 198, 198);
-}
-
-.card.removed > span {
-  visibility: hidden;
-}
-
-.graveyard#one {
-  float: left;
-  width: 450px;
-}
-
-.graveyard#two {
-  float: right;
-  width: 450px;
 }
 
 .round-corner {
