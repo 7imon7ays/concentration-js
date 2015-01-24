@@ -1,0 +1,132 @@
+.card {
+  margin: 3px;
+  display: inline-block;
+  font-size: 18px;
+  width: 3.8em;
+  height: 5em;
+  position: relative;
+  background: white;
+  box-shadow: 1px 1px 0px 1px rgba(77,77,77,1);
+}
+
+.card.hidden {
+  background: linear-gradient(to right, #88bfe8 0%,#70b0e0 100%);
+}
+
+.card > span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.card.red > span {
+  color: red;
+}
+
+.card.hidden > span {
+  visibility: hidden;
+}
+
+.card.removed {
+  background-color: rgb(199, 198, 198);
+}
+
+.card.removed > span {
+  visibility: hidden;
+}
+
+
+body {
+  background-color: green;
+}
+
+.content {
+  margin: 0 auto;
+  width: 970px;
+}
+
+.gutter {
+  clear: both;
+  height: 30px;
+}
+
+.round-corner {
+  border-radius: 3px;
+}
+
+
+.graveyard.one {
+  float: left;
+  width: 450px;
+}
+
+.graveyard.two {
+  float: right;
+  width: 450px;
+}
+
+
+div.hud {
+  background: white;
+  height: 30px;
+  font-family: 'Open Sans', sans-serif;
+  text-align: center;
+}
+
+div.hud > span {
+  padding-top: 3px;
+  padding-bottom: 3px;
+  display: inline-block;
+}
+
+div.hud > span.player.one {
+  float: left;
+  margin-left: 5%
+}
+
+div.hud > span.player.two {
+  float: right;
+  margin-right: 5%
+}
+
+button.button-green {
+  margin-top: 2px;
+  background-color: #31ba00;
+  font-size: 14px;
+  font-family: inherit;
+  color: white;
+  border: none;
+  outline: none;
+  box-shadow: 0 1px 1px 0px #000;
+  cursor: pointer;
+  width: 6.5em;
+}
+
+button.button-green.human::before {
+  content: "human";
+}
+
+button.button-green.computer {
+  box-shadow: inset 0px 1px 1px 0px #000;
+}
+
+button.button-green.computer::before {
+  content: "computer";
+}
+
+button.pull-up {
+  margin-top: -3px;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+span.player.active {
+  color: #88bfe8;
+}
+
+
+/*# sourceMappingURL=concentration.all.css.map */
