@@ -43,7 +43,7 @@ button.button-green.computer {
 }
 
 button.button-green.computer::before {
-  content: "computer";
+  content: "robot";
 }
 
 button.pull-up {

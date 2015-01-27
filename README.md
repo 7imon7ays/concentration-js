@@ -48,7 +48,7 @@ The computer AI uses [this neat JavaScript LRU Cache][lru cache] to track up to
 to keep it decoupled from the game logic. See it in action [here][watch cards].
 
 [lru cache]: https://github.com/rsms/js-lru
-[watch cards]: https://github.com/7imon7ays/concentration-js/blob/master/js/dev/computer_player.js#L39
+[watch cards]: https://github.com/7imon7ays/concentration-js/blob/master/js/dev/computer_player.js
 
 ### Promises
 
