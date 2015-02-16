@@ -19,6 +19,8 @@
       // Pick a random, non-hidden card if no matches found
       var  $availableCards = this.$cards.filter('.hidden');
       chosenCard = $availableCards[Math.floor(Math.random() * $availableCards.length)];
+    } else {
+      chosenCard = this.maybeMisfire(chosenCard);
     }
 
     setTimeout(function () {
@@ -84,6 +86,29 @@
     return null;
   };
 
+  ComputerPlayer.prototype.maybeMisfire = function (card) {
+    var prev = $(card).prev(), next = $(card).next(), missed;
+
+    // FAIL_PROBL chances of returning a neighboring card
+    // if a neighbor is hidden; twice more likely if both are hidden
+    if (prev.hasClass('hidden') && next.hasClass('hidden')) {
+      missed = Math.random() < (this.constructor.FAIL_PROB * 2);
+      card = (missed ? next[0] : card);
+
+    } else if (prev.hasClass('hidden')) {
+      missed = Math.random() < (this.constructor.FAIL_PROB);
+      card = (missed ? prev[0] : card);
+
+    } else if (next.hasClass('hidden')) {
+      missed = Math.random() < (this.constructor.FAIL_PROB);
+      card = (missed ? next[0] : card);
+
+    }
+
+    return card;
+  };
+
+  ComputerPlayer.FAIL_PROB = 1/10;
   ComputerPlayer.THINK_TIME = 1000;
 })();
 
